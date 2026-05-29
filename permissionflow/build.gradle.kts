@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("maven-publish")
+    id("signing")
 }
 
 android {
@@ -49,6 +50,28 @@ android {
     }
 }
 
+signing {
+    val signingKeyId = providers.gradleProperty("signing.keyId").orNull
+    val signingKey = providers.gradleProperty("signing.key")
+        .orElse(providers.environmentVariable("SIGNING_KEY"))
+        .orNull
+    val signingPassword = providers.gradleProperty("signing.password")
+        .orElse(providers.environmentVariable("SIGNING_PASSWORD"))
+        .orNull
+
+    if (!signingKeyId.isNullOrBlank() &&
+        !signingKey.isNullOrBlank() &&
+        !signingPassword.isNullOrBlank()
+    ) {
+        useInMemoryPgpKeys(
+            signingKeyId,
+            signingKey,
+            signingPassword
+        )
+        sign(publishing.publications)
+    }
+}
+
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -66,4 +89,74 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
+}
+
+afterEvaluate {
+
+    publishing {
+
+        publications {
+
+            create<MavenPublication>("release") {
+
+                from(components["release"])
+
+                groupId = "io.github.gourav1908"
+
+                artifactId = "permission-flow"
+
+                version = "1.0.0"
+
+                pom {
+
+                    name.set("Permission Flow")
+
+                    description.set(
+                        "Modern Compose-first Android permission manager SDK"
+                    )
+
+                    url.set(
+                        "https://github.com/gourav1908/permission-flow"
+                    )
+
+                    licenses {
+
+                        license {
+
+                            name.set("Apache-2.0")
+
+                            url.set(
+                                "https://opensource.org/licenses/Apache-2.0"
+                            )
+                        }
+                    }
+
+                    developers {
+
+                        developer {
+
+                            id.set("gourav1908")
+
+                            name.set("Gourav Bhatnagar")
+                        }
+                    }
+
+                    scm {
+
+                        connection.set(
+                            "scm:git:git://github.com/gourav1908/permission-flow.git"
+                        )
+
+                        developerConnection.set(
+                            "scm:git:ssh://github.com/gourav1908/permission-flow.git"
+                        )
+
+                        url.set(
+                            "https://github.com/gourav1908/permission-flow"
+                        )
+                    }
+                }
+            }
+        }
+    }
 }
