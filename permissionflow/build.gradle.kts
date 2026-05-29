@@ -158,5 +158,26 @@ afterEvaluate {
                 }
             }
         }
+
+        repositories {
+
+            maven {
+
+                name = "MavenCentral"
+
+                url = uri(
+                    "https://central.sonatype.com/api/v1/publisher/upload"
+                )
+
+                credentials {
+
+                    username =
+                        findProperty("mavenCentralUsername")?.toString()
+
+                    password =
+                        findProperty("mavenCentralPassword")?.toString()
+                }
+            }
+        }
     }
 }
