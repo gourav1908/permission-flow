@@ -18,7 +18,7 @@ Add the dependency:
 
 ```kotlin
 dependencies {
-    implementation("io.github.gourav1908:permission-flow:1.0.0")
+    implementation("io.github.gourav1908:permission-flow:1.0.0-alpha01")
 }
 ```
 
@@ -114,7 +114,7 @@ fun MediaPermissionButton() {
 The Maven coordinates are:
 
 ```text
-io.github.gourav1908:permission-flow:1.0.0
+io.github.gourav1908:permission-flow:1.0.0-alpha01
 ```
 
 Before publishing a public release, make sure the repository has:
@@ -122,7 +122,7 @@ Before publishing a public release, make sure the repository has:
 - A public GitHub repository
 - This `README.md`
 - The Apache-2.0 `LICENSE`
-- A version tag such as `v1.0.0`
+- A version tag such as `v1.0.0-alpha01`
 - A GitHub release for the same version
 
 Signing is configured through external properties. Provide `signing.key`,
