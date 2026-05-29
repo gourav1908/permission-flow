@@ -34,7 +34,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Validate publishing
-        run: ./gradlew :permissionflow:publishToMavenLocal
+        run: ./gradlew publishReleasePublicationToMavenCentralRepository
 
   release:
     name: Release publication
