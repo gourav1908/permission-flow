@@ -1,3 +1,5 @@
+import java.util.Base64
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
@@ -51,20 +53,25 @@ android {
 }
 
 signing {
-    val signingKeyId = providers.gradleProperty("signing.keyId").orNull
-    val signingKey = providers.gradleProperty("signing.key")
+    val plainSigningKey = providers.gradleProperty("signing.key")
         .orElse(providers.environmentVariable("SIGNING_KEY"))
         .orNull
+    val base64SigningKey = providers.environmentVariable("SIGNING_KEY_BASE64")
+        .orNull
+    val signingKey = (plainSigningKey ?: base64SigningKey?.let { encodedKey ->
+            String(
+                Base64.getDecoder().decode(encodedKey)
+            )
+        })
+        ?.replace("\\n", "\n")
     val signingPassword = providers.gradleProperty("signing.password")
         .orElse(providers.environmentVariable("SIGNING_PASSWORD"))
         .orNull
 
-    if (!signingKeyId.isNullOrBlank() &&
-        !signingKey.isNullOrBlank() &&
+    if (!signingKey.isNullOrBlank() &&
         !signingPassword.isNullOrBlank()
     ) {
         useInMemoryPgpKeys(
-            signingKeyId,
             signingKey,
             signingPassword
         )
