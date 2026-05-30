@@ -49,7 +49,6 @@ jobs:
       SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
       SIGNING_KEY_BASE64: ${{ secrets.SIGNING_KEY_BASE64 }}
       SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
-      SIGNING_KEY_FILE: ${{ runner.temp }}/signing-key.asc
 
     steps:
       - name: Checkout
