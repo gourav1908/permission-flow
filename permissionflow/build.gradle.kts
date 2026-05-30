@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "io.github.gourav1908"
-version = "1.0.0-alpha02"
+version = "1.0.0-alpha03"
 
 android {
     namespace = "io.github.permissionflow"
