@@ -172,10 +172,14 @@ afterEvaluate {
                 credentials {
 
                     username =
-                        findProperty("mavenCentralUsername")?.toString()
+                        providers.gradleProperty(
+                            "mavenCentralUsername"
+                        ).orNull
 
                     password =
-                        findProperty("mavenCentralPassword")?.toString()
+                        providers.gradleProperty(
+                            "mavenCentralPassword"
+                        ).orNull
                 }
             }
         }
