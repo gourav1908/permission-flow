@@ -18,7 +18,7 @@ jobs:
   validate:
     name: Validate library publication
     runs-on: ubuntu-latest
-    if: github.ref_type != 'tag'
+    if: github.ref_type != 'tag' && github.event_name != 'workflow_dispatch'
 
     steps:
       - name: Checkout
@@ -39,7 +39,7 @@ jobs:
   release:
     name: Release publication
     runs-on: ubuntu-latest
-    if: github.ref_type == 'tag'
+    if: github.ref_type == 'tag' || github.event_name == 'workflow_dispatch'
 
     env:
       ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
@@ -62,6 +62,12 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      - name: Check publishing secrets
+        run: |
+          test -n "$MAVEN_CENTRAL_USERNAME"
+          test -n "$MAVEN_CENTRAL_PASSWORD"
+          test -n "$SIGNING_KEY"
+          test -n "$SIGNING_PASSWORD"
 
       - name: Publish to Maven Central
-        run: ./gradlew publishReleasePublicationToMavenCentralRepository
+        run: ./gradlew :permissionflow:publishReleasePublicationToMavenCentralRepository
