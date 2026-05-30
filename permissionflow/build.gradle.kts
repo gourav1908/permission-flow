@@ -174,12 +174,20 @@ afterEvaluate {
                     username =
                         providers.gradleProperty(
                             "mavenCentralUsername"
-                        ).orNull
+                        ).orElse(
+                            providers.environmentVariable(
+                                "MAVEN_CENTRAL_USERNAME"
+                            )
+                        ).getOrElse("")
 
                     password =
                         providers.gradleProperty(
                             "mavenCentralPassword"
-                        ).orNull
+                        ).orElse(
+                            providers.environmentVariable(
+                                "MAVEN_CENTRAL_PASSWORD"
+                            )
+                        ).getOrElse("")
                 }
             }
         }
