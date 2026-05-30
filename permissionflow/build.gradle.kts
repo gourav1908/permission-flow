@@ -53,16 +53,22 @@ android {
 }
 
 signing {
+    val fileSigningKey = providers.gradleProperty("signing.keyFile")
+        .orElse(providers.environmentVariable("SIGNING_KEY_FILE"))
+        .orNull
+        ?.let { keyFile ->
+            file(keyFile).readText()
+        }
     val plainSigningKey = providers.gradleProperty("signing.key")
         .orElse(providers.environmentVariable("SIGNING_KEY"))
         .orNull
     val base64SigningKey = providers.environmentVariable("SIGNING_KEY_BASE64")
         .orNull
-    val signingKey = (plainSigningKey ?: base64SigningKey?.let { encodedKey ->
+    val signingKey = (fileSigningKey ?: base64SigningKey?.let { encodedKey ->
             String(
                 Base64.getDecoder().decode(encodedKey)
             )
-        })
+        } ?: plainSigningKey)
         ?.replace("\\n", "\n")
     val signingPassword = providers.gradleProperty("signing.password")
         .orElse(providers.environmentVariable("SIGNING_PASSWORD"))

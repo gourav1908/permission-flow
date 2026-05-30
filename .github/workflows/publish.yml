@@ -49,6 +49,7 @@ jobs:
       SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
       SIGNING_KEY_BASE64: ${{ secrets.SIGNING_KEY_BASE64 }}
       SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+      SIGNING_KEY_FILE: ${{ runner.temp }}/signing-key.asc
 
     steps:
       - name: Checkout
@@ -69,6 +70,16 @@ jobs:
           test -n "$MAVEN_CENTRAL_PASSWORD"
           test -n "$SIGNING_KEY$SIGNING_KEY_BASE64"
           test -n "$SIGNING_PASSWORD"
+
+      - name: Prepare signing key
+        run: |
+          if [ -n "$SIGNING_KEY_BASE64" ]; then
+            printf '%s' "$SIGNING_KEY_BASE64" | base64 --decode > "$SIGNING_KEY_FILE"
+          else
+            printf '%s' "$SIGNING_KEY" > "$SIGNING_KEY_FILE"
+          fi
+          test -s "$SIGNING_KEY_FILE"
+          grep -q "BEGIN PGP PRIVATE KEY BLOCK" "$SIGNING_KEY_FILE"
 
       - name: Publish to Maven Central
         run: ./gradlew :permissionflow:publishReleasePublicationToMavenCentralRepository
