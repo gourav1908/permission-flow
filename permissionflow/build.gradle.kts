@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "io.github.gourav1908"
-version = "1.0.0-alpha03"
+version = "1.0.0-alpha04"
 
 val hasSigningKey = providers.gradleProperty("signingInMemoryKey")
     .orNull
@@ -17,6 +17,9 @@ val hasSigningPassword = providers.gradleProperty("signingInMemoryKeyPassword")
     .orNull
     .isNullOrBlank()
     .not()
+val isMavenCentralPublish = gradle.startParameter.taskNames.any { taskName ->
+    taskName.contains("MavenCentral", ignoreCase = true)
+}
 
 android {
     namespace = "io.github.permissionflow"
@@ -59,14 +62,14 @@ android {
 mavenPublishing {
     publishToMavenCentral()
 
-    if (hasSigningKey && hasSigningPassword) {
+    if (isMavenCentralPublish || (hasSigningKey && hasSigningPassword)) {
         signAllPublications()
     }
 
     coordinates(
         groupId = "io.github.gourav1908",
         artifactId = "permission-flow",
-        version = "1.0.0-alpha03"
+        version = "1.0.0-alpha04"
     )
 
     pom {

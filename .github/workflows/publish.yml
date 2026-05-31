@@ -77,14 +77,15 @@ jobs:
            test -s "$signing_key_file"
            grep -q "BEGIN PGP PRIVATE KEY BLOCK" "$signing_key_file"
 
+           gradle_properties="$GRADLE_USER_HOME/gradle.properties"
+           mkdir -p "$GRADLE_USER_HOME"
+           touch "$gradle_properties"
            {
-             echo "ORG_GRADLE_PROJECT_signingInMemoryKey<<EOF"
-             cat "$signing_key_file"
-             echo "EOF"
-             echo "ORG_GRADLE_PROJECT_signingInMemoryKeyPassword<<EOF"
-             printf '%s\n' "$SIGNING_PASSWORD"
-             echo "EOF"
-           } >> "$GITHUB_ENV"
+             printf 'signingInMemoryKey='
+             awk '{ gsub(/\\/, "\\\\"); gsub(/\r/, ""); printf "%s\\n", $0 }' "$signing_key_file"
+             printf '\n'
+             printf 'signingInMemoryKeyPassword=%s\n' "$SIGNING_PASSWORD"
+           } >> "$gradle_properties"
 
        - name: Publish to Maven Central
          run: ./gradlew publishAndReleaseToMavenCentral
