@@ -47,7 +47,6 @@ jobs:
       ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
       ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
       SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
-      SIGNING_KEY_BASE64: ${{ secrets.SIGNING_KEY_BASE64 }}
       SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
 
      steps:
@@ -64,15 +63,11 @@ jobs:
          run: |
            test -n "$ORG_GRADLE_PROJECT_mavenCentralUsername"
            test -n "$ORG_GRADLE_PROJECT_mavenCentralPassword"
-           test -n "$SIGNING_KEY$SIGNING_KEY_BASE64"
+           test -n "$SIGNING_KEY"
            test -n "$SIGNING_PASSWORD"
 
            signing_key_file="$RUNNER_TEMP/signing-key.asc"
-           if [ -n "$SIGNING_KEY_BASE64" ]; then
-             printf '%s' "$SIGNING_KEY_BASE64" | base64 --decode > "$signing_key_file"
-           else
-             printf '%s' "$SIGNING_KEY" > "$signing_key_file"
-           fi
+           printf '%s' "$SIGNING_KEY" | perl -pe 's/\\n/\n/g' > "$signing_key_file"
 
            test -s "$signing_key_file"
            grep -q "BEGIN PGP PRIVATE KEY BLOCK" "$signing_key_file"

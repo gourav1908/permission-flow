@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "io.github.gourav1908"
-version = "1.0.0-alpha04"
+version = "1.0.0-alpha05"
 
 val hasSigningKey = providers.gradleProperty("signingInMemoryKey")
     .orNull
@@ -69,7 +69,7 @@ mavenPublishing {
     coordinates(
         groupId = "io.github.gourav1908",
         artifactId = "permission-flow",
-        version = "1.0.0-alpha04"
+        version = "1.0.0-alpha05"
     )
 
     pom {
