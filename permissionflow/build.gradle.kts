@@ -9,6 +9,15 @@ plugins {
 group = "io.github.gourav1908"
 version = "1.0.0-alpha03"
 
+val hasSigningKey = providers.gradleProperty("signingInMemoryKey")
+    .orNull
+    .isNullOrBlank()
+    .not()
+val hasSigningPassword = providers.gradleProperty("signingInMemoryKeyPassword")
+    .orNull
+    .isNullOrBlank()
+    .not()
+
 android {
     namespace = "io.github.permissionflow"
     compileSdk {
@@ -49,12 +58,15 @@ android {
 
 mavenPublishing {
     publishToMavenCentral()
-    signAllPublications()
+
+    if (hasSigningKey && hasSigningPassword) {
+        signAllPublications()
+    }
 
     coordinates(
         groupId = "io.github.gourav1908",
         artifactId = "permission-flow",
-        version = "1.0.0-alpha02"
+        version = "1.0.0-alpha03"
     )
 
     pom {
@@ -68,6 +80,28 @@ mavenPublishing {
         url.set(
             "https://github.com/gourav1908/permission-flow"
         )
+
+        licenses {
+            license {
+                name.set("The Apache License, Version 2.0")
+                url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+                distribution.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+            }
+        }
+
+        developers {
+            developer {
+                id.set("gourav1908")
+                name.set("Gourav Bhatnagar")
+                url.set("https://github.com/gourav1908")
+            }
+        }
+
+        scm {
+            url.set("https://github.com/gourav1908/permission-flow")
+            connection.set("scm:git:git://github.com/gourav1908/permission-flow.git")
+            developerConnection.set("scm:git:ssh://git@github.com/gourav1908/permission-flow.git")
+        }
     }
 }
 

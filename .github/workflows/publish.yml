@@ -46,9 +46,9 @@ jobs:
      env:
       ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
       ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
-
-      ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
-      ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
+      SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+      SIGNING_KEY_BASE64: ${{ secrets.SIGNING_KEY_BASE64 }}
+      SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
 
      steps:
        - uses: actions/checkout@v4
@@ -59,6 +59,32 @@ jobs:
           java-version: 17
 
        - uses: gradle/actions/setup-gradle@v4
+
+       - name: Prepare signing properties
+         run: |
+           test -n "$ORG_GRADLE_PROJECT_mavenCentralUsername"
+           test -n "$ORG_GRADLE_PROJECT_mavenCentralPassword"
+           test -n "$SIGNING_KEY$SIGNING_KEY_BASE64"
+           test -n "$SIGNING_PASSWORD"
+
+           signing_key_file="$RUNNER_TEMP/signing-key.asc"
+           if [ -n "$SIGNING_KEY_BASE64" ]; then
+             printf '%s' "$SIGNING_KEY_BASE64" | base64 --decode > "$signing_key_file"
+           else
+             printf '%s' "$SIGNING_KEY" > "$signing_key_file"
+           fi
+
+           test -s "$signing_key_file"
+           grep -q "BEGIN PGP PRIVATE KEY BLOCK" "$signing_key_file"
+
+           {
+             echo "ORG_GRADLE_PROJECT_signingInMemoryKey<<EOF"
+             cat "$signing_key_file"
+             echo "EOF"
+             echo "ORG_GRADLE_PROJECT_signingInMemoryKeyPassword<<EOF"
+             printf '%s\n' "$SIGNING_PASSWORD"
+             echo "EOF"
+           } >> "$GITHUB_ENV"
 
        - name: Publish to Maven Central
          run: ./gradlew publishAndReleaseToMavenCentral
